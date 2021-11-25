@@ -41,7 +41,9 @@ public class HashTable implements IHashTable {
         }
         double loadF = (double) size() / (int) capacity();
         if (loadF > LOAD_FACTOR) {
+            this.numHash++;
             rehash();
+            this.numCollision = 0;
         }
         int index = hashString(value) % this.table.length;
         String item = this.table[index];
@@ -55,12 +57,12 @@ public class HashTable implements IHashTable {
             while (item != null) {
                 i++;
                 if (!value.equals(item)) {
-                    numCollision++;
+                    this.numCollision++;
                 }
                 item = this.table[(index+i) % this.table.length];
             }
             this.size++;
-            this.table[index+i] = value;
+            this.table[(index+i) % this.table.length] = value;
             return true;
         }
     }
@@ -110,19 +112,22 @@ public class HashTable implements IHashTable {
     }
 
     public String getStatsLog() {
-        numHash++;
-        numCollision = 0;
-        return "d";
+        double loadF = (double) size() / (int) capacity();
+        String s1 = String.format("Before rehash # %d: load factor ", this.numHash + 1);
+        String s2 = String.format("%.2f, ", loadF);
+        String s3 = String.format("%d collision(s).\n", numCollision);
+        String sentence = s1 + s2+ s3;
+        return sentence;
     }
 
     private void rehash() {
-        numHash++;
+        getStatsLog();
         String[] old = this.table;
         String[] temp = new String[2 * this.table.length];
         this.table = temp;
         this.size = 0;
         for (int i = 0; i < old.length; i++) {
-            if (old[i] != null) {
+            if ((old[i] != null) && (old[i] != BRIDGE)) {
                 insert(old[i]);
             }
         }
