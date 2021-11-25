@@ -6,7 +6,10 @@
 import java.util.Arrays;
 
 /**
- * TODO
+ * HashTable implements IHashTable interface and works with Strings.
+ * The hash table with use linear Probing to handle collisions. It will
+ * maintain a bridge element to tell the lookup algorithm to keep
+ * looking instead of terminating.
  * 
  * @author Jonathan Tran
  * @since 11/24/2021
@@ -21,13 +24,21 @@ public class HashTable implements IHashTable {
     /* instance variables */
     private int size; // number of elements stored
     private String[] table; // data table
-    private int numHash = 0;
-    private int numCollision;
+    private int numHash = 0; // numbers of times hashed
+    private int numCollision; // number of collisions
 
+    /**
+     * Initialize a hash table with default total capacity 15.
+     */
     public HashTable() {
         this(15);
     }
 
+    /**
+     * Initialize a hash table with given total capacity,
+     * and all needed instance variables.
+     * @param capacity the total amount of space in the hash table
+     */
     public HashTable(int capacity) {
         if (capacity < 5) {
             throw new IllegalArgumentException();
@@ -35,12 +46,21 @@ public class HashTable implements IHashTable {
         this.table = new String[capacity];
     }
 
+    /**
+     * Insert element value in the hash table. Return true if the item
+     * is inserted, false if it already exists.
+     * @param value element being inserted into hash table
+     * @return boolean on if it got inserted if not
+     * @exception NullPointerException if the value is null
+     */
     @Override
     public boolean insert(String value) {
         if (value == null) {
             throw new NullPointerException();
         }
+        // gets the load factor
         double loadF = (double) size() / (int) capacity();
+        // rehashes if larger than .55
         if (loadF > LOAD_FACTOR) {
             this.numHash++;
             rehash();
@@ -68,6 +88,13 @@ public class HashTable implements IHashTable {
         }
     }
 
+    /**
+     * Return true if the item is deleted, or false if it can’t be deleted
+     * because it does not exist in the hash table
+     * @param value element being deleted from hash table
+     * @return boolean true if deleted, false if it can't be deleted
+     * @exception NullPointerException if the value is null
+     */
     @Override
     public boolean delete(String value) {
         if (value == null) {
@@ -84,6 +111,12 @@ public class HashTable implements IHashTable {
         }
     }
 
+    /**
+     * Determines if value is in the hash table.
+     * @param value element being checked in the hash table
+     * @return boolean true if found, false if not
+     * @exception NullPointerException if the value is null
+     */
     @Override
     public boolean lookup(String value) {
         if (value == null) {
@@ -102,16 +135,30 @@ public class HashTable implements IHashTable {
         return false;
     }
 
+    /**
+     * Returns the number of elements currently stored in the HashTable
+     * @return the number of elements in the hash table
+     */
     @Override
     public int size() {
         return this.size;
     }
 
+    /**
+     * Returns the total capacity of the table in the HashTable.
+     * @return the total capacity of the hash table
+     */
     @Override
     public int capacity() {
         return this.table.length;
     }
 
+    /**
+     * Returns the statistics log of the HashTable. The printed returned
+     * string should be in the following format, with a new line
+     * character at the end of each line.
+     * @return the statistics log of the HashTable
+     */
     public String getStatsLog() {
         double loadF = (double) size() / (int) capacity();
         String s1 = String.format("Before rehash # %d: load factor ",
@@ -122,6 +169,10 @@ public class HashTable implements IHashTable {
         return sentence;
     }
 
+    /**
+     * Rehash the table by (1) double the capacity, and (2) iterate through
+     * the old table and re-insert every valid element to the new table.
+     */
     private void rehash() {
         getStatsLog();
         String[] old = this.table;
@@ -135,6 +186,11 @@ public class HashTable implements IHashTable {
         }
     }
 
+    /**
+     * Returns the hash value of the given string.
+     * @param value string that needs to given a hash value
+     * @return an integer representing the hash value of the string
+     */
     private int hashString(String value) {
         int hashVal = 0;
         for (int i = 0; i < value.length(); i++) {
