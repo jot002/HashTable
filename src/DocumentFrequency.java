@@ -59,6 +59,7 @@ public class DocumentFrequency {
             for (String elem : words) {
                 if (elem.toLowerCase().equals(word.toLowerCase())) {
                     this.numDoc++;
+                    // skips to next line
                     break;
                 }
             }

@@ -62,12 +62,15 @@ public class HashTable implements IHashTable {
         double loadF = (double) size() / (int) capacity();
         // rehashes if larger than .55
         if (loadF > LOAD_FACTOR) {
+            // sets up for method getStatsLog()
             this.numHash++;
             rehash();
             this.numCollision = 0;
         }
+        // gets hash value
         int index = hashString(value) % this.table.length;
         String item = this.table[index];
+        // checks if there is an element there
         if ((item == null) || (item == BRIDGE)) {
             this.table[index] = value;
             this.size++;
@@ -75,14 +78,18 @@ public class HashTable implements IHashTable {
         }
         else {
             int i = 0;
+            // increases the index until finds an empty spot
             while (item != null) {
                 i++;
                 if (!value.equals(item)) {
+                    // increases collision if the values don't match
                     this.numCollision++;
                 }
+                // sees if the item at the new index is null
                 item = this.table[(index+i) % this.table.length];
             }
             this.size++;
+            // sets the empty location with the value
             this.table[(index+i) % this.table.length] = value;
             return true;
         }
@@ -100,11 +107,14 @@ public class HashTable implements IHashTable {
         if (value == null) {
             throw new NullPointerException();
         }
+        // gets the hash value of the argument
         int index = hashString(value) % this.table.length;
         String item = this.table[index];
+        // returns false if item doesn't exist
         if (item == null)
             return false;
         else {
+            // sets deleted item as bridge
             this.table[index] = BRIDGE;
             this.size--;
             return true;
@@ -122,14 +132,17 @@ public class HashTable implements IHashTable {
         if (value == null) {
             throw new NullPointerException();
         }
-        int val = hashString(value);
+        // gets the hash value
+        int val = hashString(value) % this.table.length;;
         String current = this.table[val];
         int i = 0;
+        // iterates until finds the value or until value is null
         while (current != null) {
             if (current.equals(value)) {
                 return true;
             }
             i++;
+            // switches to next element
             current = this.table[val+i];
         }
         return false;
@@ -164,7 +177,7 @@ public class HashTable implements IHashTable {
         String s1 = String.format("Before rehash # %d: load factor ",
                 this.numHash + 1);
         String s2 = String.format("%.2f, ", loadF);
-        String s3 = String.format("%d collision(s).\n", numCollision);
+        String s3 = String.format("%d collision(s).\n", this.numCollision);
         String sentence = s1 + s2+ s3;
         return sentence;
     }
@@ -179,6 +192,7 @@ public class HashTable implements IHashTable {
         String[] temp = new String[TWICE * this.table.length];
         this.table = temp;
         this.size = 0;
+        // reinserts the elements into the rehashed table
         for (int i = 0; i < old.length; i++) {
             if ((old[i] != null) && (old[i] != BRIDGE)) {
                 insert(old[i]);

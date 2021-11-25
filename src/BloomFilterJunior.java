@@ -1,13 +1,17 @@
 /*
- * NAME: TODO
- * PID: TODO
+ * NAME: Jonathan Tran
+ * PID: A15967290
  */
 
 /**
- * TODO
+ * BloomFilterJunior will implement a simple prototype of a
+ * bloom filter. The main purpose of the bloom filter is to
+ * check if the given value is a member of the bloom filter.
+ * This algorithm is efficient since both insertion and
+ * lookup will have O(1) time complexity.
  *
- * @author TODO
- * @since TODO
+ * @author Jonathan Tran
+ * @since A15967290
  */
 public class BloomFilterJunior {
 
@@ -19,16 +23,58 @@ public class BloomFilterJunior {
     /* Instance variables */
     private boolean[] table;
 
+    /**
+     * Initialize a BloomFilterJunior with a table (boolean array)
+     * with a given capacity.
+     * @param capacity the total amount of space in the boolean table
+     * @exception IllegalArgumentException if capacity is less than minimum
+     * initial capacity
+     */
     public BloomFilterJunior(int capacity) {
-        /* TODO */
+        if (capacity < 50) {
+            throw new IllegalArgumentException();
+        }
+        this.table = new boolean[capacity];
     }
 
+    /**
+     * Insert element value in the BloomFilterJunior.
+     * @param value element being inserted into BloomFilterJunior
+     * @exception NullPointerException if value is null
+     */
     public void insert(String value) {
-        /* TODO */
+        if (value == null) {
+            throw new NullPointerException();
+        }
+        int indexOne = hashBase256(value);
+        int indexTwo = hashCRC(value);
+        int indexThree = hashHorners(value);
+        // sets the three indices as true
+        this.table[indexOne] = true;
+        this.table[indexTwo] = true;
+        this.table[indexThree] = true;
     }
 
+    /**
+     * Check if value is a member of the BloomFilterJunior.
+     * @param value element being checked if it is in BloomFilterJunior
+     * @exception NullPointerException if value is null
+     */
     public boolean lookup(String value) {
-        /* TODO */
+        if (value == null) {
+            throw new NullPointerException();
+        }
+        int indexOne = hashBase256(value);
+        int indexTwo = hashCRC(value);
+        int indexThree = hashHorners(value);
+        // gets the three booleans at the given three indices
+        boolean boolOne = this.table[indexOne];
+        boolean boolTwo = this.table[indexTwo];
+        boolean boolThree = this.table[indexThree];
+        // checks if all three elements are true
+        if (boolOne && boolTwo && boolThree) {
+            return true;
+        }
         return false;
     }
 
@@ -53,8 +99,13 @@ public class BloomFilterJunior {
      * @return hash value
      */
     private int hashCRC(String value) {
-        /* TODO: Copy and paste from your HashTable */
-        return -1;
+        int hashVal = 0;
+        for (int i = 0; i < value.length(); i++) {
+            int leftShift = hashVal << 5;
+            int rightShift = hashVal >>> 27;
+            hashVal = (leftShift | rightShift) ^ value.charAt(i);
+        }
+        return Math.abs(hashVal % this.table.length);
     }
 
     /**
