@@ -1,30 +1,55 @@
 /*
- * NAME: TODO
- * PID: TODO
+ * NAME: Jonathan Tran
+ * PID: A15967290
  */
 
 import java.io.*;
+import java.util.Scanner;
 
 /**
  * TODO
  *
- * @author TODO
- * @since TODO
+ * @author Jonathan Tran
+ * @since 11/24/2021
  */
 public class DocumentFrequency {
 
-    public DocumentFrequency(String path) throws IOException {
-        /* TODO */
+    private int numDoc;
+    private Scanner scanner;
+
+    public DocumentFrequency(String path) throws IOException{
+        // open and read file
+        File file = new File(path);
+        try {
+            scanner = new Scanner(file);
+            this.numDoc = 0;
+        }
+        catch (IOException ioe) {
+            return;
+        }
     }
 
     public int numDocuments() {
-        /* TODO */
-        return 0;
+        return numDoc;
     }
 
     public int query(String word) {
-        /* TODO */
-        return 0;
+        HashTable table1 = new HashTable();
+        while (scanner.hasNextLine()) {
+            String words[] = scanner.nextLine().split(" ");
+            for (String elem : words) {
+                if (elem.toLowerCase().equals(word.toLowerCase())) {
+                    this.numDoc++;
+                    break;
+                }
+            }
+        }
+        return this.numDoc;
     }
 
+    public static void main(String[] args) throws IOException {
+        DocumentFrequency test = new DocumentFrequency("./src/files/test.txt");
+        System.out.println(test.query("the"));
+
+    }
 }

@@ -8,14 +8,15 @@ import java.util.Arrays;
 /**
  * TODO
  * 
- * @author TODO
- * @since TODO
+ * @author Jonathan Tran
+ * @since 11/24/2021
  */
 public class HashTable implements IHashTable {
 
     /* the bridge for lazy deletion */
     private static final String BRIDGE = new String("[BRIDGE]".toCharArray());
     private static final double LOAD_FACTOR = .55;
+    private static final int TWICE = 2;
 
     /* instance variables */
     private int size; // number of elements stored
@@ -113,7 +114,8 @@ public class HashTable implements IHashTable {
 
     public String getStatsLog() {
         double loadF = (double) size() / (int) capacity();
-        String s1 = String.format("Before rehash # %d: load factor ", this.numHash + 1);
+        String s1 = String.format("Before rehash # %d: load factor ",
+                this.numHash + 1);
         String s2 = String.format("%.2f, ", loadF);
         String s3 = String.format("%d collision(s).\n", numCollision);
         String sentence = s1 + s2+ s3;
@@ -123,7 +125,7 @@ public class HashTable implements IHashTable {
     private void rehash() {
         getStatsLog();
         String[] old = this.table;
-        String[] temp = new String[2 * this.table.length];
+        String[] temp = new String[TWICE * this.table.length];
         this.table = temp;
         this.size = 0;
         for (int i = 0; i < old.length; i++) {
